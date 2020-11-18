@@ -27,24 +27,22 @@
             
         @endforeach
 
-        <tr id="price_move" style="border-top: 2px dashed white;">
-            <td colspan="3">Доставка</td>
-            <td style="width: 100px; text-align: right;">{{$delivery_price}}<span>р</span></td>
-        </tr>
-
         <tr id="finish_price">
             <td colspan="3">Итого</td>
-            <td id="total_price" style="width: 100px; text-align: right;">{{$tottal_price + $delivery_price}}<span>р</span></td>
+            <td id="total_price" style="width: 100px; text-align: right;">{{$tottal_price}}<span>р</span></td>
         </tr>
     <table>
+
+    <div class="delivery">
+        <input type="checkbox" name="delivery" id="delivery-checkbox">
+        <label for="delivery-checkbox">Самовывоз*</label>
+    </div>
     <div id="btn-block">
-        <p id="else">*при стоимости заказа менее 700р доставка составляет - 150р</p>
-        <a class="red_button" href="#">Продолжить</a>
+        <p id="else">*минимальная сумма для доставки - 800р</p>
+        <a class="red_button {{$tottal_price < 800 ? 'red_button-deactive' : ''}}" href="#">Продолжить</a>
     </div>
 @else
-
     <p style="text-align: center; color: white;">Корзина пуста</p>
-
 @endif
 
-<input id="cart_count" type="hidden" value="{{$tottal_count}}">
+<input id="cart_count" type="hidden" value="{{$tottal_price}}">
