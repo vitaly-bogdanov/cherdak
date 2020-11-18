@@ -28,9 +28,12 @@
     <p>Имя заказчика: {{$name}}</p>
     <p>Телефон: <a href="tel:{{$phone}}">{{$phone}}</a></p>
     <p>Адрес: {{$adres}}</p>
-    <p>Кмментарии: {{$comments}}</p>
+    <p>Этаж: {{$etag}}</p>
+    <p>Домофон: {{ $domophone ? 'да' : 'нет' }}</p>
+    <p>Подъезд: {{$podezd}}</p>
+    <p>Квартира: {{$kvartira}}</p>
+    <p>Кмментарий: {{$comment}}</p>
     <p>Сумма заказа: {{$tottal_price}} р.</p>
-    <p>Стоимость доставки: {{$_SESSION['cart']['delivery_price']}} р.</p>
     @if ($maney == 'cash') 
         <p>Способ оплаты: наличные</p>
         @if ($back != 0) 
@@ -41,7 +44,6 @@
     @elseif ($maney == 'card')
         <p>Способ оплаты: карта</p>
     @endif
-
     <table>
         <tr>
             <th>Категория</th>
