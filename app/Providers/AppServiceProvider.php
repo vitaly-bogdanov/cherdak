@@ -17,6 +17,10 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('layouts.site', function ($view) {
             $view->with('tottal_count', CartController::getTottalCount());
         });
+
+        view()->composer('layouts.site', function ($view) {
+            $view->with('tottal_price', CartController::getTottalPrice());
+        });
     }
 
     /**

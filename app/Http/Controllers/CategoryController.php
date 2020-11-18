@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Category;
 use App\Product;
 use App\Banner;
+use Illuminate\Support\Facades\DB;
 
 class CategoryController extends Controller
 {
@@ -15,6 +16,13 @@ class CategoryController extends Controller
         if (!isset($_SESSION['cart']['tottal_count'])) {
             $_SESSION['cart']['tottal_count'] = 0;
         }
+        if (!isset($_SESSION['cart']['tottal_price'])) {
+            $_SESSION['cart']['tottal_price'] = 0;
+        }
+        if (!isset($_SESSION['cart']['products'])) {
+            $_SESSION['cart']['products'] = [];
+        }
+
         $params = Category::getParametrs(1);
         $params['banners'] = Banner::all();
 

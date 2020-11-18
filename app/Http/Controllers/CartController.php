@@ -11,10 +11,10 @@ class CartController extends Controller
     /**
      * Добавляем товар в корзину
      * @return array
+     * 
      */
     public function add_to_cart(Request $request)
     {
-
         session_start();
 
         if (!isset($_SESSION['cart']['products'][$request->id])) {
@@ -51,15 +51,7 @@ class CartController extends Controller
             $_SESSION['cart']['tottal_price'] += $request->price;
         }
 
-        // условия скидки
-        if ($_SESSION['cart']['tottal_price'] >= 700) {
-            $_SESSION['cart']['delivery_price'] = 0;
-        } else if ($_SESSION['cart']['tottal_price'] < 700) {
-            $_SESSION['cart']['delivery_price'] = 150;
-        }
-		
-        // отправляем общее число товаров
-        return response()->json($_SESSION['cart']['tottal_count']);
+        return response()->json($_SESSION['cart']['tottal_price']);
     }
     
     public function view_cart()
@@ -69,12 +61,10 @@ class CartController extends Controller
         if (!isset($_SESSION['cart']['products'])) {
             $_SESSION['cart']['products'] = [];
             $_SESSION['cart']['tottal_price'] = 0;
-            $_SESSION['cart']['delivery_price'] = 0;
         }
 
         return view('site.cart', [
             'tottal_price' => $_SESSION['cart']['tottal_price'],
-            'delivery_price' => $_SESSION['cart']['delivery_price'],
             'products' => $_SESSION['cart']['products'],
             'tottal_count' => $_SESSION['cart']['tottal_count']
         ]);
@@ -91,16 +81,8 @@ class CartController extends Controller
         $_SESSION['cart']['tottal_count']++;
         $_SESSION['cart']['tottal_price'] += $_SESSION['cart']['products'][$id]['price'];
 
-        // условия скидки
-        if ($_SESSION['cart']['tottal_price'] >= 700) {
-            $_SESSION['cart']['delivery_price'] = 0;
-        } else if ($_SESSION['cart']['tottal_price'] < 700) {
-            $_SESSION['cart']['delivery_price'] = 150;
-        }
-
         return view('site.cart', [
             'tottal_price' => $_SESSION['cart']['tottal_price'],
-            'delivery_price' => $_SESSION['cart']['delivery_price'],
             'products' => $_SESSION['cart']['products'],
             'tottal_count' => $_SESSION['cart']['tottal_count']
         ]);
@@ -109,7 +91,6 @@ class CartController extends Controller
     public function minus($id)
     {
         session_start();
-
         $_SESSION['cart']['products'][$id]['count']--;
         $_SESSION['cart']['tottal_price'] -= $_SESSION['cart']['products'][$id]['price'];
         if ($_SESSION['cart']['products'][$id]['count'] == 0) {
@@ -118,16 +99,8 @@ class CartController extends Controller
         
         $_SESSION['cart']['tottal_count']--;
 
-        // условия скидки
-        if ($_SESSION['cart']['tottal_price'] >= 700) {
-            $_SESSION['cart']['delivery_price'] = 0;
-        } else if ($_SESSION['cart']['tottal_price'] < 700) {
-            $_SESSION['cart']['delivery_price'] = 150;
-        }
-
         return view('site.cart', [
             'tottal_price' => $_SESSION['cart']['tottal_price'],
-            'delivery_price' => $_SESSION['cart']['delivery_price'],
             'products' => $_SESSION['cart']['products'],
             'tottal_count' => $_SESSION['cart']['tottal_count']
         ]);
@@ -135,35 +108,76 @@ class CartController extends Controller
     
     public static function getTottalCount()
     {
-    		if(!isset($_SESSION)) {
-    			session_start();
-    			$_SESSION['cart']['tottal_count'] = 0;
-    		}
-    		return $_SESSION['cart']['tottal_count'];
+        if ($_SESSION['cart']) {} else {
+            session_start();
+        }
+        return $_SESSION['cart']['tottal_count'];
+    }
+
+    public static function getTottalPrice()
+    {
+        if ($_SESSION['cart']) {} else {
+            session_start();
+        }
+        return $_SESSION['cart']['tottal_price'];
     }
 
     public function sent_cart(Request $request)
     {
+        try {
+            if ($request->delivery == '0') {
+                $this->sendCartWithoutDelivery($request);
+            } else if ($request->delivery == '1') {
+                $this->sendCartWithDelivery($request);
+            }
+        } catch(Exeption $e) {
+            return response()->json($e);
+        }
+        
+    }
+
+    private function sendCartWithDelivery($request) {
+
         session_start();
 
-        // имя
-        $name  = $request->name;
+        $name  = $request->name; // имя
+        $phone = $request->phone; // телефон и имя
+        $comment = $request->comment;
 
-        // телефон и имя
-        $phone = $request->phone;
+        $products = $_SESSION['cart']['products'];
+        $tottal_price = $_SESSION['cart']['tottal_price'];
+        $tottal_count = $_SESSION['cart']['tottal_count'];
 
-        // адрес
-        $adres = $request->adres;
-        
-        // комментарии
-        $comments = $request->comments;
+        unset($_SESSION['cart']);
+        Mail::send('mail2', 
+        [
+            'id' => rand(100, 999),
+            'name' => $name,
+            'phone' => $phone,
+            'products' => $products,
+            'comment' => $comment,
+            'tottal_price' => $tottal_price,
+            'tottal_count' => $tottal_count
+        ], function ($message) {
+            $message->from('cherdak.khv@bk.ru', 'Пиццерия "Чердак"');
+            $message->to('cherdak.khv@bk.ru', 'еуые')->subject('Сообщение с сайта "Чердак"');
+        });
+    }
 
-        // наличные или карта
-        $maney = $request->cash;
-        
-        // стоимость доставки
-        // $delivery_price = $request->delivery_price;
-        
+    private function sendCartWithoutDelivery($request) {
+
+        session_start();
+
+        $name  = $request->name; // имя
+        $phone = $request->phone; // телефон и имя
+        $adres = $request->adres; // адрес
+        $comment = $request->comment; // комментарии
+        $maney = $request->cash; // наличные или карта
+        $kvartira = $request->kvartira;
+        $podezd = $request->podezd;
+        $etag = $request->etag;
+        $domophone = $request->domophone;
+
         if ($maney == 'cash') {
             $manyback = $request->manyback; 
             if ($manyback == "yes") {
@@ -180,20 +194,22 @@ class CartController extends Controller
         }
 
         $products = $_SESSION['cart']['products'];
-        $tottal_price = $_SESSION['cart']['tottal_price'] + $_SESSION['cart']['delivery_price'];
+        $tottal_price = $_SESSION['cart']['tottal_price'];
         $tottal_count = $_SESSION['cart']['tottal_count'];
-        //Mail::to('kaliummati@gmail.com', 'Чердак')->send(new MeilCart($name, $phone, $adres, $maney, $manyback, $back, $products, $tottal_price, $tottal_count));
-        
+        unset($_SESSION['cart']);
         Mail::send('mail', 
         [
             'id' => rand(100, 999),
             'name' => $name,
             'phone' => $phone,
             'adres' => $adres,
-            'comments' => $comments,
+            'comment' => $comment,
             'maney' => $maney,
-            // 'delivery_price' => $_SESSION['cart']['delivery_price'],
             'manyback' => $manyback,
+            'podezd' => $podezd,
+            'etag' => $etag,
+            'kvartira' => $kvartira,
+            'domophone' => $domophone,
             'back' => $back,
             'products' => $products,
             'tottal_price' => $tottal_price,
@@ -201,9 +217,7 @@ class CartController extends Controller
         ], function ($message) {
             $message->from('cherdak.khv@bk.ru', 'Пиццерия "Чердак"');
             $message->to('cherdak.khv@bk.ru', 'еуые')->subject('Сообщение с сайта "Чердак"');
-            
         });
 
-        unset($_SESSION['cart']);
     }
 }
