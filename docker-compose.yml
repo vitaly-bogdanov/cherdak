@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: cherdak
+      MYSQL_USER: admin_cherdak
+      MYSQL_PASSWORD: 1234567
+      MYSQL_ROOT_PASSWORD: example
+    volumes:
+      - ./data:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080

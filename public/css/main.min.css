@@ -482,17 +482,12 @@ header #head .logo img{
     position: relative
 }
 #s3 #content #products .product .price {
-    background-color: #fad43d;
     position: absolute;
-    left: 50%;
+    left: 55px;
+    bottom: 25px;
     -webkit-transform: translateX(-50%);
     -ms-transform: translateX(-50%);
     transform: translateX(-50%);
-    border: 2px dashed #000;
-    -webkit-border-bottom-left-radius: 15px;
-    border-bottom-left-radius: 15px;
-    -webkit-border-bottom-right-radius: 15px;
-    border-bottom-right-radius: 15px;
     height: 35px;
     padding-top: 0px;
     width: 110px;
@@ -502,7 +497,7 @@ header #head .logo img{
 }
 #s3 #content #products .product .price span {
     font-family: RotondaCbold;
-    color: #000;
+    color: #582a12;
 }
 #s3 #content #products .product .price span:first-child {
     font-size: 25px
@@ -546,8 +541,9 @@ header #head .logo img{
     height: 80px
 }
 #s3 #content #products .product .size {
-    text-align: center;
+    text-align: right;
     margin-top: 44px;
+    margin-right: 10px;
 }
 #s3 #content #products .product .size span {
     font-size: 25px;

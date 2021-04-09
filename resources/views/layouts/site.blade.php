@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
     {{-- Защита от csrf --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <title>Пиццерия "Чердак"</title>
-
     <link rel="stylesheet" href="{{URL::asset('css/main.min.css')}}">
 </head>
 <body>
@@ -232,7 +229,15 @@
             <span>{{$tottal_price}}</span>
         </div>
     </div>
-
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-190897733-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-190897733-1');
+    </script>
     <script src="{{URL::asset('js/libs.min.js')}}"></script>
     <script src="{{URL::asset('js/common.min.js')}}"></script>
     <!-- Yandex.Metrika counter --> <script type="text/javascript" > (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)}; m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}) (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym"); ym(52340266, "init", { id:52340266, clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true }); </script> <!-- /Yandex.Metrika counter -->
